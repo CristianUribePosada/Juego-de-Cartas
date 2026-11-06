@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Juego de Cartas</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800&display=swap');
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background-color: #352000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    /* Tablero de 5 columnas x 4 filas */
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      grid-template-rows: repeat(4, 1fr);
+      gap: 15px;
+      max-width: 900px;
+      width: 100%;
+    }
+
+    /* Estilos de las cartas */
+    .card-btn {
+      background-color: #ffffff;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      height: 120px;
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #333333;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s;
+    }
+
+    .card-btn:hover:not(:disabled) {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+      border-color: #cccccc;
+    }
+
+    /* Estado deshabilitado (gris) */
+    .card-btn:disabled {
+      background-color: #d1d5db;
+      color: #6b7280;
+      border-color: #9ca3af;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    /* Modal emergente (<dialog>) ajustado para encajar sin scrollbar */
+    .modal {
+      border: none;
+      border-radius: 16px;
+      padding: 16px;
+      width: 92vw;
+      height: 92vh;
+      max-width: none;
+      max-height: none;
+      margin: auto;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+      background-color: #ffffff;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .modal::backdrop {
+      background-color: rgba(0, 0, 0, 0.7);
+    }
+
+    .modal-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      text-align: center;
+      height: 100%;
+      width: 100%;
+    }
+
+    .modal-question {
+      font-size: 1.4rem;
+      color: #1f2937;
+      font-weight: 600;
+      margin-top: 10px;
+    }
+
+    /* Contenedor flexible para la imagen */
+    .image-container {
+      
+      flex: 1;
+      min-height: 0;
+      background-color: #f3f4f6;
+      border: 2px dashed #d1d5db;
+      border-radius: 12px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      padding: 8px;
+    }
+
+    .image-container img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    /* Botón Mostrar Respuesta */
+    .btn-show {
+      background-color: #10b981;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      width: 100%;
+      max-width: 350px;
+      flex-shrink: 0;
+    }
+
+    .btn-show:hover {
+      background-color: #059669;
+    }
+
+    /* Texto de la respuesta */
+    .modal-answer {
+      font-size: 1.2rem;
+      color: #047857;
+      font-weight: bold;
+      background-color: #ecfdf5;
+      padding: 10px 16px;
+      border-radius: 8px;
+      width: 100%;
+      display: none;
+      flex-shrink: 0;
+    }
+
+    .modal-answer.visible {
+      display: block;
+    }
+
+    /* Botón de cierre estático "X" posicionado arriba a la derecha */
+    .btn-close {
+      position: absolute;
+      top: 12px;
+      right: 16px;
+      background: none;
+      border: none;
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #6b7280;
+      cursor: pointer;
+      line-height: 1;
+      z-index: 10;
+      padding: 4px;
+      transition: color 0.2s;
+    }
+
+    .btn-close:hover {
+      color: #ef4444;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Tablero contenedor de 20 cartas -->
+  <main class="grid-container" id="board"></main>
+
+  <!-- Componente Modal Único Dinámico -->
+  <dialog class="modal" id="card-modal">
+    <button class="btn-close" id="modal-close-btn" aria-label="Cerrar modal">&times;</button>
+    <div class="modal-content">
+      <p class="modal-question" id="modal-question-text"></p>
+      
+      <div class="image-container" id="modal-image-container">
+        <img id="modal-img" src="" alt="">
+      </div>
+
+      <button class="btn-show" id="modal-show-btn">Mostrar Respuesta</button>
+      <div class="modal-answer" id="modal-answer-text"></div>
+    </div>
+  </dialog>
+
+  <script>
+    // 1. Definición fija del contenido de las 20 cartas
+    const cardsData = [
+      { id: 1, question: "pon aquí la pregunta 1", answer: "pon aquí la respuesta 1", imgSrc: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQXVtByH48FWYOwd_2Y6zyi6unCZFLqS-hlZwPK8NSb7Q&s=10", imgAlt: "Imagen ilustrativa 1" },
+      { id: 2, question: "pon aquí la pregunta 2", answer: "pon aquí la respuesta 2", imgSrc: "", imgAlt: "Imagen ilustrativa 2" },
+      { id: 3, question: "pon aquí la pregunta 3", answer: "pon aquí la respuesta 3", imgSrc: "", imgAlt: "Imagen ilustrativa 3" },
+      { id: 4, question: "pon aquí la pregunta 4", answer: "pon aquí la respuesta 4", imgSrc: "", imgAlt: "Imagen ilustrativa 4" },
+      { id: 5, question: "pon aquí la pregunta 5", answer: "pon aquí la respuesta 5", imgSrc: "", imgAlt: "Imagen ilustrativa 5" },
+      { id: 6, question: "pon aquí la pregunta 6", answer: "pon aquí la respuesta 6", imgSrc: "", imgAlt: "Imagen ilustrativa 6" },
+      { id: 7, question: "pon aquí la pregunta 7", answer: "pon aquí la respuesta 7", imgSrc: "", imgAlt: "Imagen ilustrativa 7" },
+      { id: 8, question: "pon aquí la pregunta 8", answer: "pon aquí la respuesta 8", imgSrc: "", imgAlt: "Imagen ilustrativa 8" },
+      { id: 9, question: "pon aquí la pregunta 9", answer: "pon aquí la respuesta 9", imgSrc: "", imgAlt: "Imagen ilustrativa 9" },
+      { id: 10, question: "pon aquí la pregunta 10", answer: "pon aquí la respuesta 10", imgSrc: "", imgAlt: "Imagen ilustrativa 10" },
+      { id: 11, question: "pon aquí la pregunta 11", answer: "pon aquí la respuesta 11", imgSrc: "", imgAlt: "Imagen ilustrativa 11" },
+      { id: 12, question: "pon aquí la pregunta 12", answer: "pon aquí la respuesta 12", imgSrc: "", imgAlt: "Imagen ilustrativa 12" },
+      { id: 13, question: "pon aquí la pregunta 13", answer: "pon aquí la respuesta 13", imgSrc: "", imgAlt: "Imagen ilustrativa 13" },
+      { id: 14, question: "pon aquí la pregunta 14", answer: "pon aquí la respuesta 14", imgSrc: "", imgAlt: "Imagen ilustrativa 14" },
+      { id: 15, question: "pon aquí la pregunta 15", answer: "pon aquí la respuesta 15", imgSrc: "", imgAlt: "Imagen ilustrativa 15" },
+      { id: 16, question: "pon aquí la pregunta 16", answer: "pon aquí la respuesta 16", imgSrc: "", imgAlt: "Imagen ilustrativa 16" },
+      { id: 17, question: "pon aquí la pregunta 17", answer: "pon aquí la respuesta 17", imgSrc: "", imgAlt: "Imagen ilustrativa 17" },
+      { id: 18, question: "pon aquí la pregunta 18", answer: "pon aquí la respuesta 18", imgSrc: "", imgAlt: "Imagen ilustrativa 18" },
+      { id: 19, question: "pon aquí la pregunta 19", answer: "pon aquí la respuesta 19", imgSrc: "", imgAlt: "Imagen ilustrativa 19" },
+      { id: 20, question: "pon aquí la pregunta 20", answer: "pon aquí la respuesta 20", imgSrc: "", imgAlt: "Imagen ilustrativa 20" }
+    ];
+
+    // Referencias al DOM
+    const board = document.getElementById('board');
+    const modal = document.getElementById('card-modal');
+    const modalQuestion = document.getElementById('modal-question-text');
+    const modalImg = document.getElementById('modal-img');
+    const modalAnswer = document.getElementById('modal-answer-text');
+    const modalShowBtn = document.getElementById('modal-show-btn');
+    const modalCloseBtn = document.getElementById('modal-close-btn');
+
+    let currentCardButton = null;
+
+    // 2. Generar dinámicamente las 20 cartas en la cuadrícula
+    cardsData.forEach(card => {
+      const btn = document.createElement('button');
+      btn.classList.add('card-btn');
+      btn.textContent = card.id;
+      btn.addEventListener('click', () => openCardModal(card, btn));
+      board.appendChild(btn);
+    });
+
+    // 3. Abrir el modal e inyectar el contenido de la carta seleccionada
+    function openCardModal(card, buttonElement) {
+      currentCardButton = buttonElement;
+
+      modalQuestion.textContent = card.question;
+      modalAnswer.textContent = card.answer;
+      modalAnswer.classList.remove('visible'); // Ocultar respuesta al abrir
+
+      if (card.imgSrc) {
+        modalImg.src = card.imgSrc;
+        modalImg.style.display = 'block';
+      } else {
+        modalImg.src = '';
+        modalImg.style.display = 'none';
+      }
+      modalImg.alt = card.imgAlt;
+
+      modal.showModal();
+    }
+
+    // 4. Mostrar respuesta
+    modalShowBtn.addEventListener('click', () => {
+      modalAnswer.classList.add('visible');
+    });
+
+    // 5. Cerrar modal y deshabilitar la carta vista
+    modalCloseBtn.addEventListener('click', () => {
+      modal.close();
+      if (currentCardButton) {
+        currentCardButton.disabled = true;
+      }
+    });
+  </script>
+</body>
+</html>
