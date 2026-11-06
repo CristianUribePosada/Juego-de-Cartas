@@ -15,7 +15,10 @@
       }
 
       body {
-        background-color: #352000;
+        background-image: url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQN9BIQWtMgrlV9pWMzLweIDtEfBzL-WY9jeuhW6rxbAg&s=10");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -48,14 +51,15 @@
         align-items: center;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
         transition:
-          transform 0.2s,
-          background-color 0.2s,
-          box-shadow 0.2s;
+          transform 0.2s ease,
+          background-color 0.2s ease,
+          box-shadow 0.2s ease;
       }
 
+      /* Hover para elevar la carta */
       .card-btn:hover:not(:disabled) {
-        transform: translateY(-3px);
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        transform: translateY(-8px) !important;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
         border-color: #cccccc;
       }
 
@@ -109,25 +113,17 @@
 
       /* Transición para el fondo oscuro (Backdrop) */
       .modal::backdrop {
-        background-color: rgba(0, 0, 0, 0);
+        background-color: rgba(0, 0, 0, 0.7);
         transition:
           background-color 0.3s ease-out,
           overlay 0.3s allow-discrete,
           display 0.3s allow-discrete;
       }
 
-      .modal[open]::backdrop {
-        background-color: rgba(0, 0, 0, 0.7);
-      }
-
       @starting-style {
         .modal[open]::backdrop {
           background-color: rgba(0, 0, 0, 0);
         }
-      }
-
-      .modal::backdrop {
-        background-color: rgba(0, 0, 0, 0.7);
       }
 
       .modal-content {
@@ -422,12 +418,19 @@
 
       let currentCardButton = null;
 
-      // 2. Generar dinámicamente las 20 cartas con la animación
+      // 2. Generar dinámicamente las 20 cartas con la animación de entrada
       cardsData.forEach((card, index) => {
         const btn = document.createElement("button");
         btn.classList.add("card-btn", "animate-deal");
         btn.style.animationDelay = `${index * 0.05}s`;
         btn.textContent = card.id;
+
+        // Remover la clase al terminar la animación para liberar el transform hover
+        btn.addEventListener("animationend", () => {
+          btn.classList.remove("animate-deal");
+          btn.style.animationDelay = "";
+        });
+
         btn.addEventListener("click", () => openCardModal(card, btn));
         board.appendChild(btn);
       });
