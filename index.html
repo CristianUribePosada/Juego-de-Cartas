@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Juego de Cartas</title>
+    <title>Juego de Cartas - Micromundos ITM</title>
     <style>
       @import url("https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800&display=swap");
 
@@ -87,7 +87,6 @@
         position: relative;
         overflow: hidden;
 
-        /* Transición de opacidad y escala al abrir/cerrar */
         opacity: 0;
         transform: scale(0.8);
         transition:
@@ -97,13 +96,11 @@
           display 0.3s allow-discrete;
       }
 
-      /* Estado cuando el modal está abierto (showModal) */
       .modal[open] {
         opacity: 1;
         transform: scale(1);
       }
 
-      /* Punto de partida antes de que comience la animación de entrada */
       @starting-style {
         .modal[open] {
           opacity: 0;
@@ -111,7 +108,6 @@
         }
       }
 
-      /* Transición para el fondo oscuro (Backdrop) */
       .modal::backdrop {
         background-color: rgba(0, 0, 0, 0.7);
         transition:
@@ -144,7 +140,6 @@
         margin-top: 10px;
       }
 
-      /* Contenedor flexible para la imagen */
       .image-container {
         flex: 1;
         min-height: 0;
@@ -164,7 +159,6 @@
         object-fit: contain;
       }
 
-      /* Botón Mostrar Respuesta */
       .btn-show {
         background-color: #10b981;
         color: white;
@@ -184,7 +178,6 @@
         background-color: #059669;
       }
 
-      /* Texto de la respuesta */
       .modal-answer {
         font-size: 1.2rem;
         color: #047857;
@@ -201,7 +194,6 @@
         display: block;
       }
 
-      /* Botón de cierre "X" */
       .btn-close {
         position: absolute;
         top: 12px;
@@ -222,7 +214,6 @@
         color: #ef4444;
       }
 
-      /* Definición de la animación de entrada */
       @keyframes dealCard {
         0% {
           opacity: 0;
@@ -241,10 +232,8 @@
     </style>
   </head>
   <body>
-    <!-- Tablero contenedor de 20 cartas -->
     <main class="grid-container" id="board"></main>
 
-    <!-- Componente Modal Único Dinámico -->
     <dialog class="modal" id="card-modal">
       <button class="btn-close" id="modal-close-btn" aria-label="Cerrar modal">
         &times;
@@ -262,152 +251,188 @@
     </dialog>
 
     <script>
-      // 1. Definición fija del contenido de las 20 cartas
       const cardsData = [
         {
           id: 1,
-          question: "pon aquí la pregunta 1",
-          answer: "pon aquí la respuesta 1",
+          question: "¿Cuál es la idea principal de un micromundo?",
+          answer: "Aprender y equivocarse sin riesgos ni costos reales.",
           imgSrc:
-            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQXVtByH48FWYOwd_2Y6zyi6unCZFLqS-hlZwPK8NSb7Q&s=10",
-          imgAlt: "Imagen ilustrativa 1",
+            "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=80",
+          imgAlt: "Aprendizaje mediante tecnología",
         },
         {
           id: 2,
-          question: "pon aquí la pregunta 2",
-          answer: "pon aquí la respuesta 2",
-          imgSrc: "",
-          imgAlt: "Imagen ilustrativa 2",
+          question: "¿En los micromundos se aprende leyendo o haciendo?",
+          answer: "Haciendo (tomando decisiones directas).",
+          imgSrc:
+            "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1200&q=80",
+          imgAlt: "Personas aprendiendo y trabajando en equipo",
         },
         {
           id: 3,
-          question: "pon aquí la pregunta 3",
-          answer: "pon aquí la respuesta 3",
-          imgSrc: "",
-          imgAlt: "Imagen ilustrativa 3",
+          question:
+            "¿En qué sector se utiliza el ejemplo clásico de los simuladores para explicar el aprendizaje sin riesgos?",
+          answer: "Con los aviones / simuladores de aviación.",
+          imgSrc:
+            "https://education.okstate.edu/site-files/images/aviation-space/avi-space-minors.jpg",
+          imgAlt: "Simulador de vuelo",
         },
         {
           id: 4,
-          question: "pon aquí la pregunta 4",
-          answer: "pon aquí la respuesta 4",
-          imgSrc: "",
-          imgAlt: "Imagen ilustrativa 4",
+          question: "¿Los micromundos son solo juegos o también enseñan?",
+          answer: "Enseñan (combinan entretenimiento con aprendizaje).",
+          imgSrc:
+            "https://images.unsplash.com/photo-1593508512255-86ab42a8e620?auto=format&fit=crop&w=1200&q=80",
+          imgAlt: "Tecnología de videojuegos y entretenimiento",
         },
         {
           id: 5,
-          question: "pon aquí la pregunta 5",
-          answer: "pon aquí la respuesta 5",
-          imgSrc: "",
-          imgAlt: "Imagen ilustrativa 5",
+          question:
+            "Menciona uno de los 4 casos seleccionados de micromundos internacionales presentados en la exposición.",
+          answer:
+            "Beer Game, People Express, Oil Producers o BBC World Service.",
+          imgSrc:
+            "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1200&q=80",
+          imgAlt: "Simulación y administración empresarial",
         },
         {
           id: 6,
-          question: "pon aquí la pregunta 6",
-          answer: "pon aquí la respuesta 6",
-          imgSrc: "",
-          imgAlt: "Imagen ilustrativa 6",
+          question: "¿De qué país es el simulador de energía llamado ENERBIZ?",
+          answer: "De Colombia.",
+          imgSrc:
+            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcREMrlDN0DenV09lRqJJKhdg6UkYhNH5olAgRJAocGIeA&s=10",
+          imgAlt: "Bandera de Colombia",
         },
         {
           id: 7,
-          question: "pon aquí la pregunta 7",
-          answer: "pon aquí la respuesta 7",
-          imgSrc: "",
-          imgAlt: "Imagen ilustrativa 7",
+          question:
+            "En el simulador colombiano ENERBIZ, ¿qué servicio se compra y se vende?",
+          answer: "Energía / Electricidad.",
+          imgSrc:
+            "https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?auto=format&fit=crop&w=1200&q=80",
+          imgAlt: "Infraestructura de energía",
         },
         {
           id: 8,
-          question: "pon aquí la pregunta 8",
-          answer: "pon aquí la respuesta 8",
-          imgSrc: "",
-          imgAlt: "Imagen ilustrativa 8",
+          question: "¿Para qué sector fue diseñado el simulador ENERBIZ?",
+          answer: "Para el sector eléctrico / Mercado de Energía Mayorista.",
+          imgSrc:
+            "https://lirp.cdn-website.com/d2f0e919/dms3rep/multi/opt/Labour%2BPower%2BCompany%2B%28LPC%29%2Bversterkt%2Bpositie%2Bin%2BNoord-Nederland%2Bmet%2Bovername%2Bvan%2BVedaflex-1920w.jpg",
+          imgAlt: "Central de generación eléctrica",
         },
         {
           id: 9,
-          question: "pon aquí la pregunta 9",
-          answer: "pon aquí la respuesta 9",
-          imgSrc: "",
-          imgAlt: "Imagen ilustrativa 9",
+          question:
+            "¿Qué simulador colombiano permite entrenar la compra y venta de electricidad sin arriesgar dinero real?",
+          answer: "ENERBIZ.",
+          imgSrc:
+            "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1200&q=80",
+          imgAlt: "Gestión y análisis empresarial",
         },
         {
           id: 10,
-          question: "pon aquí la pregunta 10",
-          answer: "pon aquí la respuesta 10",
-          imgSrc: "",
-          imgAlt: "Imagen ilustrativa 10",
+          question:
+            "¿Qué sucede dentro de un micromundo cuando tomas una mala decisión?",
+          answer:
+            "Observas la consecuencia (pérdidas o errores) y aprendes a corregirla en el siguiente intento.",
+          imgSrc:
+            "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1200&q=80",
+          imgAlt: "Análisis y toma de decisiones",
         },
         {
           id: 11,
-          question: "pon aquí la pregunta 11",
-          answer: "pon aquí la respuesta 11",
-          imgSrc: "",
-          imgAlt: "Imagen ilustrativa 11",
+          question:
+            "En los simuladores de empresas, ¿qué le pasa a una compañía si aumentan sus ventas pero no contrata suficiente personal?",
+          answer: "Puede caer en quiebra / colapsar el servicio.",
+          imgSrc:
+            "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&q=80",
+          imgAlt: "Industria de la aviación",
         },
         {
           id: 12,
-          question: "pon aquí la pregunta 12",
-          answer: "pon aquí la respuesta 12",
-          imgSrc: "",
-          imgAlt: "Imagen ilustrativa 12",
+          question:
+            "¿Cómo cambiaron las pantallas de los simuladores desde los años 80 hasta hoy?",
+          answer:
+            "Pasaron de gráficos simples en 2D con números a entornos 3D y Realidad Virtual.",
+          imgSrc:
+            "https://fauzanmaverick.files.wordpress.com/2010/08/ibm-pc-1980.jpg",
+          imgAlt: "Computador de los años 80",
         },
         {
           id: 13,
-          question: "pon aquí la pregunta 13",
-          answer: "pon aquí la respuesta 13",
-          imgSrc: "",
-          imgAlt: "Imagen ilustrativa 13",
+          question:
+            "¿Qué permite practicar la realidad virtual en profesiones como la medicina antes de atender a un paciente?",
+          answer: "Procedimientos y técnicas médicas en un entorno simulado, sin poner en riesgo al paciente.",
+          imgSrc:
+            "https://storage.googleapis.com/medvarsity-ai/assimilate/banner/learning_beyond_the_scalpel%253A_the_future_of_cardiac_surgical_training.webp",
+          imgAlt: "Entrenamiento de pilotos en simulador",
         },
         {
           id: 14,
-          question: "pon aquí la pregunta 14",
-          answer: "pon aquí la respuesta 14",
-          imgSrc: "",
-          imgAlt: "Imagen ilustrativa 14",
+          question:
+            '¿Qué aparatos en la cabeza se usan hoy para sentir que estás "dentro" de un juego?',
+          answer: "Gafas o visores de Realidad Virtual (VR).",
+          imgSrc:
+            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRHND2tKHHGFlXmURdRCjDiCxSPPRht8hR-qEqGeAuD1A&s=10",
+          imgAlt: "Experiencia de realidad virtual",
         },
         {
           id: 15,
-          question: "pon aquí la pregunta 15",
-          answer: "pon aquí la respuesta 15",
-          imgSrc: "",
-          imgAlt: "Imagen ilustrativa 15",
+          question:
+            "Menciona una profesión de la salud que entrena con realidad virtual antes de tocar un paciente.",
+          answer: "Los médicos / cirujanos.",
+          imgSrc:
+            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRsDMKC2_GE2VVHs7GO5Ql2nn19k25o5KucG7hrHESckw&s=10",
+          imgAlt: "Simulación quirúrgica con realidad virtual",
         },
         {
           id: 16,
-          question: "pon aquí la pregunta 16",
-          answer: "pon aquí la respuesta 16",
-          imgSrc: "",
-          imgAlt: "Imagen ilustrativa 16",
+          question:
+            "¿Qué construyes y administras en el juego Cities: Skylines?",
+          answer: "Una ciudad.",
+          imgSrc:
+            "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?auto=format&fit=crop&w=1200&q=80",
+          imgAlt: "Ciudad vista desde el aire",
         },
         {
           id: 17,
-          question: "pon aquí la pregunta 17",
-          answer: "pon aquí la respuesta 17",
-          imgSrc: "",
-          imgAlt: "Imagen ilustrativa 17",
+          question:
+            "¿Qué videojuego de construcción de ciudades penaliza las decisiones impulsivas de tráfico o impuestos? (Se menciona en la exposición)",
+          answer: "Cities: Skylines.",
+          imgSrc:
+            "https://elcomercio.pe/resizer/v2/ZFADTLJRNJENTFBD4MZH4MJKKA.jpg?auth=1ed33cc21bbd65138c283439b508a344b33e9f3ed84b6cb0eff8944335b0706d&height=1600&quality=75&smart=true&width=2400",
+          imgAlt: "Tráfico y planificación de una ciudad",
         },
         {
           id: 18,
-          question: "pon aquí la pregunta 18",
-          answer: "pon aquí la respuesta 18",
-          imgSrc: "",
-          imgAlt: "Imagen ilustrativa 18",
+          question:
+            "¿Cuáles son los 3 retos que enfrentan los micromundos en el futuro? (menciona al menos 2)",
+          answer:
+            "La sobre-simplificación, la brecha de acceso y la transferencia real.",
+          imgSrc:
+            "https://images.unsplash.com/photo-1535223289827-42f1e9919769?auto=format&fit=crop&w=1200&q=80",
+          imgAlt: "Tecnología inmersiva del futuro",
         },
         {
           id: 19,
-          question: "pon aquí la pregunta 19",
-          answer: "pon aquí la respuesta 19",
-          imgSrc: "",
-          imgAlt: "Imagen ilustrativa 19",
+          question:
+            "¿Qué ventaja tiene aprender mediante micromundos en lugar de limitarse a leer manuales?",
+          answer:
+            "Acelerar el aprendizaje práctico y evitar cometer errores costosos en la vida real.",
+          imgSrc:
+            "https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=1200&q=80",
+          imgAlt: "Capacitación y trabajo en equipo",
         },
         {
           id: 20,
-          question: "pon aquí la pregunta 20",
-          answer: "pon aquí la respuesta 20",
-          imgSrc: "",
-          imgAlt: "Imagen ilustrativa 20",
+          question: "¿Para qué sirven los micromundos en general?",
+          answer: "Para entrenar la toma de decisiones sin arriesgar nada.",
+          imgSrc:
+            "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1200&q=80",
+          imgAlt: "Planificación y toma de decisiones",
         },
       ];
 
-      // Referencias al DOM
       const board = document.getElementById("board");
       const modal = document.getElementById("card-modal");
       const modalQuestion = document.getElementById("modal-question-text");
@@ -418,14 +443,12 @@
 
       let currentCardButton = null;
 
-      // 2. Generar dinámicamente las 20 cartas con la animación de entrada
       cardsData.forEach((card, index) => {
         const btn = document.createElement("button");
         btn.classList.add("card-btn", "animate-deal");
         btn.style.animationDelay = `${index * 0.05}s`;
         btn.textContent = card.id;
 
-        // Remover la clase al terminar la animación para liberar el transform hover
         btn.addEventListener("animationend", () => {
           btn.classList.remove("animate-deal");
           btn.style.animationDelay = "";
@@ -435,7 +458,6 @@
         board.appendChild(btn);
       });
 
-      // 3. Abrir el modal e inyectar el contenido
       function openCardModal(card, buttonElement) {
         currentCardButton = buttonElement;
 
@@ -455,12 +477,10 @@
         modal.showModal();
       }
 
-      // 4. Mostrar respuesta
       modalShowBtn.addEventListener("click", () => {
         modalAnswer.classList.add("visible");
       });
 
-      // 5. Cerrar modal y deshabilitar la carta vista
       modalCloseBtn.addEventListener("click", () => {
         modal.close();
         if (currentCardButton) {
